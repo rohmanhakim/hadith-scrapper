@@ -1,4 +1,5 @@
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.firestore.Firestore
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.cloud.FirestoreClient
@@ -41,6 +42,10 @@ fun main(args: Array<String>) {
 
   val hadith = scrapHadith(compilers[0].second, "https://sunnah.com/${compilers[0].first}/1/1")
 
+  saveToFirestore(hadith, db)
+}
+
+private fun saveToFirestore(hadith: Hadith, db: Firestore) {
   val docData = HashMap<String, Any>()
 
   docData["compiler"] = hadith.compiler
@@ -64,7 +69,7 @@ fun main(args: Array<String>) {
   println("Update time : " + future.get().updateTime)
 }
 
-fun scrapHadith(compiler: String, url: String): Hadith {
+private fun scrapHadith(compiler: String, url: String): Hadith {
   val document: Document = Jsoup.connect(url).get()
 
   val bookNumber = document.getElementsByClass("book_page_number").text().toInt()
